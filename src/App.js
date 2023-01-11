@@ -10,12 +10,16 @@ import Map, {
   ScaleControl,
 } from "react-map-gl";
 import { FindOthers } from "./utils/helper";
-import { mapboxStyle, mapboxglAccessToken, MAX_TILE_LIMIT } from "./utils/consts";
+import {
+  mapboxStyle,
+  mapboxglAccessToken,
+  MAX_TILE_LIMIT,
+} from "./utils/consts";
 import * as MaplibreGrid from "./utils/grid/index";
 import { Sold_area } from "./utils/consts/soldArea";
 import { CreateGeojson } from "./utils/createGeoJson";
 import { SelectSoldAreaa } from "./utils/grids_comp/selectSoldArea";
-import { GetSoldTiles ,SaveSoldTiles} from "./utils/services/api";
+import { GetSoldTiles, SaveSoldTiles } from "./utils/services/api";
 
 function App() {
   const [viewState, setViewState] = useState({
@@ -173,11 +177,14 @@ function App() {
         });
       }
 
-
       // this if for converting the first blue layer into red layer ... like selection layer to selected layer
       if (active === true) {
         for (var i = 0; i < selectedCells.length; i++) {
-          if (sCells.length >= MAX_TILE_LIMIT && sCells.length >= MAX_TILE_LIMIT) continue;
+          if (
+            sCells.length >= MAX_TILE_LIMIT &&
+            sCells.length >= MAX_TILE_LIMIT
+          )
+            continue;
 
           sCells.push(selectedCells[i]);
 
@@ -208,7 +215,6 @@ function App() {
         });
       }
 
-
       // this if for select the sold area .....
       if (cellIndex === -1 && active === false) {
         if (checkSelection2(bbox)) {
@@ -236,7 +242,6 @@ function App() {
           features: selectedCells,
         });
       }
-
 
       // if tile is already seleceted after we click again then ... This if checks the conditions and remove the seleced tile......
       if (cellIndex !== -1 && active === false) {
@@ -301,7 +306,7 @@ function App() {
           sold_Area2.add(ele);
           const myArray = ele.split(" ");
           const cell = CreateGeojson(myArray);
-          SoldCells.push(cell);
+          // SoldCells.push(cell);
         });
       });
 
@@ -321,7 +326,6 @@ function App() {
    */
 
   const reset = () => {
-    // console.log([...selctedSet]);
     selctedSet.clear();
     sCells.length = 0;
     mapRef.current.getSource("layer2").setData({
@@ -330,17 +334,26 @@ function App() {
     });
   };
 
-  const GetSoldArea = async() => {
+  const GetSoldArea = async () => {
     let soldAreaJson = await GetSoldTiles();
-    console.log(soldAreaJson.response);
-  
-    soldAreaJson.response.forEach(element => {
-      // let myArray = element.data.split(" ");
-      // console.log(myArray);
+    soldAreaJson.forEach((element) => {
+      element.value.forEach((element) => {
+        console.log(element);
+        const myArray = element.split(" ");
+        const cell = CreateGeojson(myArray);
+        SoldCells.push(cell);
+      });
     });
-  }
+    mapRef.current.getSource("layer3").setData({
+      type: "FeatureCollection",
+      features: SoldCells,
+    });
+  };
 
-  const Save
+  const SaveSoldArea = async () => {
+    let arr = Array.from(selctedSet);
+    await SaveSoldTiles(arr);
+  };
 
   const Screenshot = () => {
     var img = mapRef.current.getCanvas().toDataURL();
@@ -348,7 +361,7 @@ function App() {
     document.getElementById("imag").append(imgHTML);
   };
 
-  return (  
+  return (
     <div className="w-full h-full ">
       <Map
         attributionControl={false}
@@ -387,10 +400,22 @@ function App() {
       <div className="z-10 absolute bottom-10 left-32" id="imag"></div>
 
       <button
-        className=" z-10 absolute top-2 left-2 bg-white px-2 rounded-sm hover:bg-slate-300"
-        onClick={getSoldArea}
+        className=" z-10 absolute top-4 left-2 bg-white px-2 rounded-sm hover:bg-slate-300"
+        onClick={reset}
       >
         Reset
+      </button>
+      <button
+        className=" z-10 absolute top-12 left-2 bg-white px-2 rounded-sm hover:bg-slate-300"
+        onClick={GetSoldArea}
+      >
+        GetSoldArea
+      </button>
+      <button
+        className=" z-10 absolute top-20 left-2 bg-white px-2 rounded-sm hover:bg-slate-300"
+        onClick={SaveSoldArea}
+      >
+        SaveToSoldArea
       </button>
     </div>
   );
