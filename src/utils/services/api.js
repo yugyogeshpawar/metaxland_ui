@@ -2,30 +2,18 @@ import axios from "axios";
 
 const URL = "http://localhost:3001/api/data";
 
-
-export const GetSoldTiles = () => {
+let Sold_Area = {};
+export const GetSoldTiles = async() => {
   try {
-    axios
-      .get(URL)
-      .then(function (response) {
-        // handle success
-        // console.log(response);
-        
-      })
-      .catch(function (error) {
-        // handle error
-        console.log("error");
-      })
-      .then(function () {
-        // always executed
-        console.log("Done");
-      });
+    Sold_Area = await axios.get(URL)
+    return Sold_Area.data;
+  
   } catch (error) {
     console.log("error while calling api ", error);
   }
 };
 
-export const SaveSoldTiles = () => {
+export const saveSoldTiles = () => {
   try {
     axios
       .post(`${URL}/store`,)

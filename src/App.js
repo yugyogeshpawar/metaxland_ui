@@ -330,13 +330,17 @@ function App() {
     });
   };
 
-  const getSoldArea = () => {
-    // SaveSoldTiles();
-// console.log(selctedSet);
-    console.log(GetSoldTiles());
-
-
+  const GetSoldArea = async() => {
+    let soldAreaJson = await GetSoldTiles();
+    console.log(soldAreaJson.response);
+  
+    soldAreaJson.response.forEach(element => {
+      // let myArray = element.data.split(" ");
+      // console.log(myArray);
+    });
   }
+
+  const Save
 
   const Screenshot = () => {
     var img = mapRef.current.getCanvas().toDataURL();
