@@ -1,4 +1,4 @@
-export const selectSoldAreaa = (Sold_area, bbox) => {
+export const SelectSoldAreaa = (Sold_area, bbox) => {
   let output;
   Sold_area.forEach((element, i) => {
     let ele = new Set(element);

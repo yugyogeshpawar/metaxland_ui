@@ -3,7 +3,7 @@ import axios from "axios";
 const URL = "http://localhost:3001/api/data";
 
 
-export const getSoldTiles = () => {
+export const GetSoldTiles = () => {
   try {
     axios
       .get(URL)
@@ -25,7 +25,7 @@ export const getSoldTiles = () => {
   }
 };
 
-export const saveSoldTiles = () => {
+export const SaveSoldTiles = () => {
   try {
     axios
       .post(`${URL}/store`,)

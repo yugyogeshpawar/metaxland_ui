@@ -10,12 +10,12 @@ import Map, {
   ScaleControl,
 } from "react-map-gl";
 import { FindOthers } from "./utils/helper";
-import { mapboxStyle, mapboxglAccessToken, limit } from "./utils/consts";
+import { mapboxStyle, mapboxglAccessToken, MAX_TILE_LIMIT } from "./utils/consts";
 import * as MaplibreGrid from "./utils/grid/index";
 import { Sold_area } from "./utils/consts/soldArea";
 import { CreateGeojson } from "./utils/createGeoJson";
-import { selectSoldAreaa } from "./utils/grids_comp/selectSoldArea";
-import { getSoldTiles ,saveSoldTiles} from "./utils/services/api";
+import { SelectSoldAreaa } from "./utils/grids_comp/selectSoldArea";
+import { GetSoldTiles ,SaveSoldTiles} from "./utils/services/api";
 
 function App() {
   const [viewState, setViewState] = useState({
@@ -164,6 +164,7 @@ function App() {
       const bbox = event.bbox;
       const cellIndex = checkSelecion(bbox);
 
+      // this if for deselecting the sold if seleted
       if (SoldSelCells.length !== 0) {
         SoldSelCells.length = 0;
         mapRef.current.getSource("layer4").setData({
@@ -172,9 +173,11 @@ function App() {
         });
       }
 
+
+      // this if for converting the first blue layer into red layer ... like selection layer to selected layer
       if (active === true) {
         for (var i = 0; i < selectedCells.length; i++) {
-          if (sCells.length >= limit && sCells.length >= limit) continue;
+          if (sCells.length >= MAX_TILE_LIMIT && sCells.length >= MAX_TILE_LIMIT) continue;
 
           sCells.push(selectedCells[i]);
 
@@ -205,10 +208,12 @@ function App() {
         });
       }
 
+
+      // this if for select the sold area .....
       if (cellIndex === -1 && active === false) {
         if (checkSelection2(bbox)) {
           // active = active ? false : true;
-          let soldSelectedArea = selectSoldAreaa(Sold_area, bbox);
+          let soldSelectedArea = SelectSoldAreaa(Sold_area, bbox);
           if (typeof soldSelectedArea !== "undefined") {
             SoldSelCells.length = 0;
             soldSelectedArea.forEach((ele22) => {
@@ -232,6 +237,8 @@ function App() {
         });
       }
 
+
+      // if tile is already seleceted after we click again then ... This if checks the conditions and remove the seleced tile......
       if (cellIndex !== -1 && active === false) {
         var x = sCells[cellIndex].geometry.bbox;
         selctedSet.delete(
@@ -324,14 +331,14 @@ function App() {
   };
 
   const getSoldArea = () => {
-    // saveSoldTiles();
+    // SaveSoldTiles();
 // console.log(selctedSet);
-    console.log(getSoldTiles());
+    console.log(GetSoldTiles());
 
 
   }
 
-  const screenshot = () => {
+  const Screenshot = () => {
     var img = mapRef.current.getCanvas().toDataURL();
     var imgHTML = `<img src="${img}", width=500, height = 500/>`;
     document.getElementById("imag").append(imgHTML);

@@ -1,3 +1,6 @@
+
+// these is the sold area 
+
 export const Sold_area = [
   [
     "72.57353458 23.09050000 72.57362451 23.09058993",
