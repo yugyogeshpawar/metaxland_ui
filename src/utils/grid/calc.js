@@ -103,7 +103,7 @@ export function getGrid(bbox, gridWidth, gridHeight, units) {
  * @returns {GeoJSON.BBox}
  */
 export function getGridCell(point, gridWidth, gridHeight, units) {
-
+  
   const earthCircumference = Math.ceil(distance([0, 0], [180, 0], { units }) * 2);
   /** @type {(from: GeoJSON.Position, to: GeoJSON.Position, options: { units: Units }) => number} */
   const fullDistance = (from, to, options) => {

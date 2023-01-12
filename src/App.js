@@ -19,7 +19,12 @@ import * as MaplibreGrid from "./utils/grid/index";
 import { Sold_area } from "./utils/consts/soldArea";
 import { CreateGeojson } from "./utils/createGeoJson";
 import { SelectSoldAreaa } from "./utils/grids_comp/selectSoldArea";
-import { GetSoldTiles, SaveSoldTiles ,DeleteSoldArea} from "./utils/services/api";
+import {
+  GetSoldTiles,
+  SaveSoldTiles,
+  DeleteSoldArea,
+  GetSoldTile,
+} from "./utils/services/api";
 
 function App() {
   const [viewState, setViewState] = useState({
@@ -122,6 +127,11 @@ function App() {
     },
   };
 
+  useEffect(() => {
+
+    GetSoldTile(viewState);
+  }, [viewState]);
+
   const [sold_Area2, setSold_area] = useState(new Set());
   // console.log(sold_Area);
 
@@ -142,7 +152,6 @@ function App() {
           8
         )} ${bbox[3].toFixed(8)}`
     );
-    console.log("here222");
     return cellIndex2;
   };
 
@@ -226,6 +235,7 @@ function App() {
               const myArray = ele22.split(" ");
               const cell = CreateGeojson(myArray);
               SoldSelCells.push(cell);
+              console.log(cell);
             });
           }
 
@@ -299,14 +309,10 @@ function App() {
   const GetSoldAreaAuto = async () => {
     let soldAreaJson = await GetSoldTiles();
     soldAreaJson.forEach((element) => {
-      console.log(Sold_area);
-      console.log(element);
       Sold_area.push(element.value);
-      console.log(Sold_area);
       element.value.forEach((element) => {
         if (sold_Area2.has(element) == false) {
           sold_Area2.add(element);
-          console.log("add");
           const myArray = element.split(" ");
           const cell = CreateGeojson(myArray);
           SoldCells.push(cell);

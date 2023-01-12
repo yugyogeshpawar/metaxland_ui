@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const URL = "http://localhost:3001";
+let lastLat, lastLan ;
 
 let Sold_Area = {};
 export const GetSoldTiles = async () => {
@@ -13,6 +14,17 @@ export const GetSoldTiles = async () => {
     console.log("error while calling get api ", error);
   }
 };
+
+export const GetSoldTile = async (viewState) => {
+  // console.log(viewState.longitude, viewState.latitude, viewState.zoom);
+  // console.log(lastOne, viewState.latitude);
+  if (typeof lastLat === "undefined" || (lastLat + 0.001) < viewState.latitude || (lastLat + 0.001) < viewState.latitude)   {
+    console.log(viewState.longitude);
+    console.log(viewState.latitude);
+    lastLat = viewState.latitude
+    lastLan = viewState.longitude
+  }
+}
 
 export const SaveSoldTiles = async (selctedSet) => {
 
@@ -27,6 +39,6 @@ export const SaveSoldTiles = async (selctedSet) => {
   }
 }
 
-export const DeleteSoldArea = async() => {
-  
+export const DeleteSoldArea = async(SoldSelCells) => {
+  console.log(SoldSelCells);
 }
