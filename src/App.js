@@ -19,7 +19,7 @@ import * as MaplibreGrid from "./utils/grid/index";
 import { Sold_area } from "./utils/consts/soldArea";
 import { CreateGeojson } from "./utils/createGeoJson";
 import { SelectSoldAreaa } from "./utils/grids_comp/selectSoldArea";
-import { GetSoldTiles, SaveSoldTiles } from "./utils/services/api";
+import { GetSoldTiles, SaveSoldTiles ,DeleteSoldArea} from "./utils/services/api";
 
 function App() {
   const [viewState, setViewState] = useState({
@@ -228,7 +228,7 @@ function App() {
               SoldSelCells.push(cell);
             });
           }
-          console.log(SoldSelCells);
+
           mapRef.current.getSource("layer4").setData({
             type: "FeatureCollection",
             features: SoldSelCells,
@@ -292,7 +292,32 @@ function App() {
       });
     });
     console.log(createSoldLayer(Sold_area));
+
+    GetSoldAreaAuto();
   }, []);
+
+  const GetSoldAreaAuto = async () => {
+    let soldAreaJson = await GetSoldTiles();
+    soldAreaJson.forEach((element) => {
+      console.log(Sold_area);
+      console.log(element);
+      Sold_area.push(element.value);
+      console.log(Sold_area);
+      element.value.forEach((element) => {
+        if (sold_Area2.has(element) == false) {
+          sold_Area2.add(element);
+          console.log("add");
+          const myArray = element.split(" ");
+          const cell = CreateGeojson(myArray);
+          SoldCells.push(cell);
+        }
+      });
+    });
+    mapRef.current.getSource("layer3").setData({
+      type: "FeatureCollection",
+      features: SoldCells,
+    });
+  };
 
   /**
    * @param {Sold_area.BBox} sold_Area = 2d array
@@ -334,25 +359,29 @@ function App() {
     });
   };
 
-  const GetSoldArea = async () => {
-    let soldAreaJson = await GetSoldTiles();
-    soldAreaJson.forEach((element) => {
-      element.value.forEach((element) => {
-        console.log(element);
-        const myArray = element.split(" ");
-        const cell = CreateGeojson(myArray);
-        SoldCells.push(cell);
-      });
-    });
-    mapRef.current.getSource("layer3").setData({
-      type: "FeatureCollection",
-      features: SoldCells,
-    });
-  };
-
   const SaveSoldArea = async () => {
+    if (selctedSet.size < 1) return;
+
     let arr = Array.from(selctedSet);
     await SaveSoldTiles(arr);
+    selctedSet.clear();
+    sCells.length = 0;
+    mapRef.current.getSource("layer2").setData({
+      type: "FeatureCollection",
+      features: sCells,
+    });
+
+    GetSoldAreaAuto();
+  };
+
+  const deleteSoldArea = async () => {
+    DeleteSoldArea(SoldSelCells);
+    mapRef.current.getSource("layer2").setData({
+      type: "FeatureCollection",
+      features: sCells,
+    });
+
+    GetSoldAreaAuto();
   };
 
   const Screenshot = () => {
@@ -407,7 +436,7 @@ function App() {
       </button>
       <button
         className=" z-10 absolute top-12 left-2 bg-white px-2 rounded-sm hover:bg-slate-300"
-        onClick={GetSoldArea}
+        onClick={GetSoldAreaAuto}
       >
         GetSoldArea
       </button>
@@ -416,6 +445,12 @@ function App() {
         onClick={SaveSoldArea}
       >
         SaveToSoldArea
+      </button>
+      <button
+        className=" z-10 absolute top-28 left-2 bg-white px-2 rounded-sm hover:bg-slate-300"
+        onClick={deleteSoldArea}
+      >
+        Delete
       </button>
     </div>
   );
