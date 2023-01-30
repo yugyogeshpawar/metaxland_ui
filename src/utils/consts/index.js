@@ -12,4 +12,4 @@ export const mapboxStyle =
 
 
 // the maximum limit of the tiles selection
-export const MAX_TILE_LIMIT = 10000;
+export const MAX_TILE_LIMIT = 1000;

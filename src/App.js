@@ -20,28 +20,33 @@ import { Sold_area } from "./utils/consts/soldArea";
 import { CreateGeojson } from "./utils/createGeoJson";
 import { SelectSoldAreaa } from "./utils/grids_comp/selectSoldArea";
 import {
-  GetSoldTiles,
+  GetAllSoldTiles,
   SaveSoldTiles,
   DeleteSoldArea,
-  GetSoldTile,
+  GetSoldTiles,
 } from "./utils/services/api";
 
+
+
 function App() {
+
+
   const [viewState, setViewState] = useState({
-    longitude: 72.5745,
-    latitude: 23.0893,
+    longitude: 72.52783064016589,
+    latitude: 23.03354684389069,
     zoom: 17,
   });
 
-  const [selctedSet, setSelctedSet] = useState(new Set());
   let bbox1 = [];
   let active = false;
   let dif = 0.0000899320363724538;
-
+  const [selctedSet, setSelctedSet] = useState(new Set());
+  
   const [selectedCells, setCellsToArray] = useState([]);
   const [sCells, setCells] = useState([]);
   const [SoldCells, setSoldCells] = useState([]);
   const [SoldSelCells, setSelSoldCells] = useState([]);
+
 
   const geojson = useMemo(
     () => ({
@@ -126,14 +131,29 @@ function App() {
       "fill-opacity": 0.4,
     },
   };
+  const layerStyle5 = {
+    // id: "sold_sel_area",
+    // type: "fill",
+    // layout: {},
+    // paint: {
+    //   "fill-color": "#f08",
+    //   "fill-opacity": 0.4,
+    // },
+    id: "sold_sel_area2",
+    type: "line",
+    source:"sold_sel_area",
+    layout: {},
+    paint: {
+      "line-color": "#000",
+      "line-width": 0.8,
+    },
+  };
 
-  useEffect(() => {
-
-    GetSoldTile(viewState);
-  }, [viewState]);
+  // useEffect(() => {
+  //   GetSoldTiles(viewState);
+  // }, [viewState]);
 
   const [sold_Area2, setSold_area] = useState(new Set());
-  // console.log(sold_Area);
 
   /**
    * @param {GeoJSON.BBox} bbox
@@ -164,17 +184,19 @@ function App() {
     const x = `${bbox[0].toFixed(8)} ${bbox[1].toFixed(8)} ${bbox[2].toFixed(
       8
     )} ${bbox[3].toFixed(8)}`;
-
-    return sold_Area2.has(x) || selctedSet.has(x);
+    
+    return sold_Area2.has(x) || selctedSet.has(x);  
   };
 
   const mapRef = useRef();
 
   const onMapLoad = React.useCallback(() => {
-    mapRef.current.addControl(grid);
 
+    mapRef.current.addControl(grid);
+    
     mapRef.current.on(MaplibreGrid.GRID_CLICK_EVENT, (event) => {
       const bbox = event.bbox;
+      // console.log(bbox.toString());
       const cellIndex = checkSelecion(bbox);
 
       // this if for deselecting the sold if seleted
@@ -186,7 +208,7 @@ function App() {
         });
       }
 
-      // this if for converting the first blue layer into red layer ... like selection layer to selected layer
+      // this if for converting the first blue(first Section layer) layer into red layer ... like selection layer to selected layer
       if (active === true) {
         for (var i = 0; i < selectedCells.length; i++) {
           if (
@@ -227,15 +249,14 @@ function App() {
       // this if for select the sold area .....
       if (cellIndex === -1 && active === false) {
         if (checkSelection2(bbox)) {
-          // active = active ? false : true;
           let soldSelectedArea = SelectSoldAreaa(Sold_area, bbox);
+          console.log(soldSelectedArea);
           if (typeof soldSelectedArea !== "undefined") {
             SoldSelCells.length = 0;
-            soldSelectedArea.forEach((ele22) => {
+            soldSelectedArea.value.forEach((ele22) => {
               const myArray = ele22.split(" ");
               const cell = CreateGeojson(myArray);
               SoldSelCells.push(cell);
-              console.log(cell);
             });
           }
 
@@ -307,13 +328,15 @@ function App() {
   }, []);
 
   const GetSoldAreaAuto = async () => {
-    let soldAreaJson = await GetSoldTiles();
+
+    let soldAreaJson = await GetAllSoldTiles();
     soldAreaJson.forEach((element) => {
-      Sold_area.push(element.value);
-      element.value.forEach((element) => {
-        if (sold_Area2.has(element) == false) {
-          sold_Area2.add(element);
-          const myArray = element.split(" ");
+      Sold_area.push(element);
+      element.value.forEach((element2) => {     
+        const str = `${element2[0].toFixed(8)} ${element2[1].toFixed(8)} ${element2[2].toFixed(8)} ${element2[3].toFixed(8)}`
+        if (sold_Area2.has(str) == false) {
+          sold_Area2.add(str);
+          const myArray = str.split(" ");
           const cell = CreateGeojson(myArray);
           SoldCells.push(cell);
         }
@@ -367,8 +390,8 @@ function App() {
 
   const SaveSoldArea = async () => {
     if (selctedSet.size < 1) return;
-
     let arr = Array.from(selctedSet);
+    console.log(arr);
     await SaveSoldTiles(arr);
     selctedSet.clear();
     sCells.length = 0;
@@ -376,12 +399,12 @@ function App() {
       type: "FeatureCollection",
       features: sCells,
     });
-
     GetSoldAreaAuto();
   };
 
   const deleteSoldArea = async () => {
-    DeleteSoldArea(SoldSelCells);
+
+    await DeleteSoldArea();
     mapRef.current.getSource("layer2").setData({
       type: "FeatureCollection",
       features: sCells,
@@ -395,6 +418,10 @@ function App() {
     var imgHTML = `<img src="${img}", width=500, height = 500/>`;
     document.getElementById("imag").append(imgHTML);
   };
+
+  const getTile = () => {
+    GetSoldTiles(viewState)
+  }
 
   return (
     <div className="w-full h-full ">
@@ -431,6 +458,9 @@ function App() {
         <Source id="layer4" type="geojson" data={geojson4}>
           <Layer {...layerStyle4} minzoom={15} />
         </Source>
+        {/* <Source id="layer5" type="geojson" data={geojson4}>
+          <Layer {...layerStyle5} minzoom={15} />
+        </Source> */}
       </Map>
       <div className="z-10 absolute bottom-10 left-32" id="imag"></div>
 
@@ -457,6 +487,12 @@ function App() {
         onClick={deleteSoldArea}
       >
         Delete
+      </button>
+      <button
+        className=" z-10 absolute top-36 left-2 bg-white px-2 rounded-sm hover:bg-slate-300"
+        onClick={getTile}
+      >
+        Check
       </button>
     </div>
   );
