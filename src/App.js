@@ -25,6 +25,7 @@ import {
   DeleteSoldArea,
   GetSoldTiles,
 } from "./utils/services/api";
+import Leftmenus from './components/Leftmenus'
 
 
 
@@ -34,7 +35,7 @@ function App() {
   const [viewState, setViewState] = useState({
     longitude: 72.52783064016589,
     latitude: 23.03354684389069,
-    zoom: 17,
+    zoom: 17
   });
 
   let bbox1 = [];
@@ -425,6 +426,7 @@ function App() {
 
   return (
     <div className="w-full h-full ">
+      <Leftmenus />
       <Map
         attributionControl={false}
         ref={mapRef}
@@ -465,31 +467,31 @@ function App() {
       <div className="z-10 absolute bottom-10 left-32" id="imag"></div>
 
       <button
-        className=" z-10 absolute top-4 left-2 bg-white px-2 rounded-sm hover:bg-slate-300"
+        className=" z-10 absolute bottom-4 right-2 bg-white px-2 rounded-sm hover:bg-slate-300"
         onClick={reset}
       >
         Reset
       </button>
       <button
-        className=" z-10 absolute top-12 left-2 bg-white px-2 rounded-sm hover:bg-slate-300"
+        className=" z-10 absolute bottom-12 right-2 bg-white px-2 rounded-sm hover:bg-slate-300"
         onClick={GetSoldAreaAuto}
       >
         GetSoldArea
       </button>
       <button
-        className=" z-10 absolute top-20 left-2 bg-white px-2 rounded-sm hover:bg-slate-300"
+        className=" z-10 absolute bottom-20 right-2 bg-white px-2 rounded-sm hover:bg-slate-300"
         onClick={SaveSoldArea}
       >
         SaveToSoldArea
       </button>
       <button
-        className=" z-10 absolute top-28 left-2 bg-white px-2 rounded-sm hover:bg-slate-300"
+        className=" z-10 absolute bottom-28 right-2 bg-white px-2 rounded-sm hover:bg-slate-300"
         onClick={deleteSoldArea}
       >
         Delete
       </button>
       <button
-        className=" z-10 absolute top-36 left-2 bg-white px-2 rounded-sm hover:bg-slate-300"
+        className=" z-10 absolute bottom-36 right-2 bg-white px-2 rounded-sm hover:bg-slate-300"
         onClick={getTile}
       >
         Check
