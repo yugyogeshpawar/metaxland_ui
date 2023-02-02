@@ -9,7 +9,4 @@ export const mapboxglAccessToken =
 export const mapboxStyle =
   "mapbox://styles/kidroot/cl9n18vdd00fr14mqq560gyn3";
 
-
-
-// the maximum limit of the tiles selection
-export const MAX_TILE_LIMIT = 1000;
+  

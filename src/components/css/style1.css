@@ -22980,11 +22980,11 @@
     color: #000;
   }
   .sidebar-menu > ul > li.active > a:hover {
-    background-color: #e60073;
+    background-color: #6a307e;
     color: #fff;
   }
   .sidebar-menu li.active a {
-    background-color: #ff0080;
+    background-color: #864b9b;
     color: #fff;
   }
   .menu-title {

@@ -17,7 +17,7 @@ export const GetAllSoldTiles = async () => {
 
 export const GetSoldTiles = async (viewState) => {
   // console.log(viewState.longitude, viewState.latitude, viewState.zoom);
-  console.log(viewState.longitude,viewState.latitude);
+  console.log(viewState.longitude, viewState.latitude);
   // console.log((lastLog),viewState.longitude);
 
   if (
@@ -31,7 +31,6 @@ export const GetSoldTiles = async (viewState) => {
     lastLog = viewState.longitude;
     lastLat = viewState.latitude;
 
-
     try {
       //  console.log( await axios.post(`${URL}/gettiles`, viewState))
     } catch (error) {
@@ -39,14 +38,11 @@ export const GetSoldTiles = async (viewState) => {
     }
   }
 
-
   try {
-     console.log( await axios.post(`${URL}/gettiles`, viewState))
+    console.log(await axios.post(`${URL}/gettiles`, viewState));
   } catch (error) {
     console.log("error while calling store api ", error);
   }
-
-
 };
 
 export const SaveSoldTiles = async (selctedSet) => {
